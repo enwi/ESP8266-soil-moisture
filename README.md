@@ -10,13 +10,13 @@ ___
 
 ### Hardware
 * 1x ESP8266 or ESP32 ([I used this one](https://www.seeedstudio.com/NodeMCU-v2-Lua-based-ESP8266-development-kit.html))
-* 5x Capacitive soil moisture sensors ([these](https://www.seeedstudio.com/Grove-Capacitive-Moisture-Sensor-Corrosion-Resistant.html))
+* 1-5x Capacitive soil moisture sensors ([these](https://www.seeedstudio.com/Grove-Capacitive-Moisture-Sensor-Corrosion-Resistant.html))
 * 1x [ADS1115](http://www.ebay.com/sch/ADS1115)
 * Some wires
 
 ### Software dependencies
 * [Arduino MySQL connector](https://github.com/ChuckBell/MySQL_Connector_Arduino)
-* [Adafruit ADS1X15](https://github.com/adafruit/Adafruit_ADS1X15)
+* [Adafruit ADS1X15](https://github.com/adafruit/Adafruit_ADS1X15) (Only when using more then 1 moisture sensor)
 
 ### Database
 * A MySQL database running in your network
