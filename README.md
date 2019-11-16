@@ -73,3 +73,4 @@ If that does not work try the following
 6. Restart to start clean with `sudo reboot`
 
 ### Case
+You can find the case for the soil moisture sensors [here](https://www.thingiverse.com/thing:3980520)
