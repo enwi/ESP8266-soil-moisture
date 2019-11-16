@@ -1,9 +1,9 @@
 # ESP8266-soil-moisture
-Small arduino script that reads 1 to 5 soil mositure sensors at a given interval and stores them in a remote database
+Small arduino script that reads 1 to 5 soil moisture sensors at a given interval and stores them on a remote database
 ___
 
 >
-> Note this README and repository are still work in progress
+> Note this README and repository are still a work in progress
 >
 
 ## Requirements
@@ -11,12 +11,12 @@ ___
 ### Hardware
 * 1x ESP8266 or ESP32 ([I used this one](https://www.seeedstudio.com/NodeMCU-v2-Lua-based-ESP8266-development-kit.html))
 * 1-5x Capacitive soil moisture sensors ([these](https://www.seeedstudio.com/Grove-Capacitive-Moisture-Sensor-Corrosion-Resistant.html))
-* 1x [ADS1115](http://www.ebay.com/sch/ADS1115)
+* 1x [ADS1115](http://www.ebay.com/sch/ADS1115) (Only when using more than 1 moisture sensor)
 * Some wires
 
 ### Software dependencies
 * [Arduino MySQL connector](https://github.com/ChuckBell/MySQL_Connector_Arduino)
-* [Adafruit ADS1X15](https://github.com/adafruit/Adafruit_ADS1X15) (Only when using more then 1 moisture sensor)
+* [Adafruit ADS1X15](https://github.com/adafruit/Adafruit_ADS1X15) (Only when using more than 1 moisture sensor)
 
 ### Database
 * A MySQL database running in your network
@@ -59,15 +59,16 @@ int(11) | text | int(11)           | int(11)
 1. Try setting one with: `mysqladmin -u root password newpass`
 
 If that does not work try the following
-1. Stop the mysql service with `sudo /etc/init.d/mysql stop` or `sudo service mysql stop`
+1. Stop the MySQL service with `sudo /etc/init.d/mysql stop` or `sudo service mysql stop`
 2. Start the MySQL server w/o password with `sudo mysqld_safe --skip-grant-tables &`
 3. Connect to the MySQL server with `mysql -u root`
 4. Set a new password with 
-  1. `use mysql;`
-  2.a MySQL 5.7.5 and earlier: `update user set password=PASSWORD("NEW-ROOT-PASSWORD") where User='root';`
-  2.b MySQL 5.7.6 and newer: `SET PASSWORD FOR 'root'@'localhost' = PASSWORD("newpass");`
-  3. `flush privileges;`
-  4. `quit`
+    1. `use mysql;`
+    2.
+        * MySQL 5.7.5 and earlier: `update user set password=PASSWORD("NEW-ROOT-PASSWORD") where User='root';`
+        * MySQL 5.7.6 and newer: `SET PASSWORD FOR 'root'@'localhost' = PASSWORD("newpass");`
+    3. `flush privileges;`
+    4. `quit`
 5. Stop MySQL server with `sudo killall mysqld`
 6. Restart to start clean with `sudo reboot`
 
