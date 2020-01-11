@@ -34,8 +34,10 @@ Connector dbConnection;
 //
 // Update interval
 //
-const long interval = 5000; // interval in milliseconds
-long lastTime = -interval;
+const long checkInterval = 5000; // Interval to check for changes in milliseconds
+const long sendInterval = 300000; // Interval to always send data
+long lastCheckTime = 0;
+long lastSendTime = -sendInterval; // This makes all values update once
 
 //
 // Plant config
@@ -63,7 +65,7 @@ void acquireData()
 {
   if(plant1)
   {
-    const int16_t tmp = analogRead(A0);
+    const int16_t tmp = map(analogRead(A0), 0, 1024, 1024, 0);
     if(abs(plant1Value-tmp) > 10)
     {
       plant1Value = tmp;
@@ -72,16 +74,16 @@ void acquireData()
   }
   if(plant2)
   {
-    const int16_t tmp = ads.readADC_SingleEnded(0);
+    const int16_t tmp = map(ads.readADC_SingleEnded(0), 0, 0x7FF0, 1024, 0);
     if(abs(plant2Value-tmp) > 10)
     {
-      plant1Value = tmp;
+      plant2Value = tmp;
       updatePlant(plant2Id,plant2Value);
     }
   }
   if(plant3)
   {
-    const int16_t tmp = ads.readADC_SingleEnded(1);
+    const int16_t tmp = map(ads.readADC_SingleEnded(1), 0, 0x7FF0, 1024, 0);
     if(abs(plant3Value-tmp) > 10)
     {
       plant3Value = tmp;
@@ -90,7 +92,7 @@ void acquireData()
   }
   if(plant4)
   {
-    const int16_t tmp = ads.readADC_SingleEnded(2);
+    const int16_t tmp = map(ads.readADC_SingleEnded(2), 0, 0x7FF0, 1024, 0);
     if(abs(plant4Value-tmp) > 10)
     {
       plant4Value = tmp;
@@ -99,12 +101,41 @@ void acquireData()
   }
   if(plant5)
   {
-    const int16_t tmp = ads.readADC_SingleEnded(3);
+    const int16_t tmp = map(ads.readADC_SingleEnded(3), 0, 0x7FF0, 1024, 0);
     if(abs(plant5Value-tmp) > 10)
     {
       plant5Value = tmp;
       updatePlant(plant5Id,plant5Value);
     }
+  }
+}
+
+void sendData()
+{
+  if(plant1)
+  {
+    plant1Value = map(analogRead(A0), 0, 1024, 1024, 0);
+    updatePlant(plant1Id,plant1Value);
+  }
+  if(plant2)
+  {
+    plant2Value = map(ads.readADC_SingleEnded(0), 0, 0x7FF0, 1024, 0);
+    updatePlant(plant2Id,plant2Value);
+  }
+  if(plant3)
+  {
+    plant3Value = map(ads.readADC_SingleEnded(1), 0, 0x7FF0, 1024, 0);
+    updatePlant(plant3Id,plant3Value);
+  }
+  if(plant4)
+  {
+    plant4Value = map(ads.readADC_SingleEnded(2), 0, 0x7FF0, 1024, 0);
+    updatePlant(plant4Id,plant4Value);
+  }
+  if(plant5)
+  {
+    plant5Value = map(ads.readADC_SingleEnded(3), 0, 0x7FF0, 1024, 0);
+    updatePlant(plant5Id,plant5Value);
   }
 }
 
@@ -169,15 +200,16 @@ void setup()
   println();
   print("IP: ");
   println(WiFi.localIP());
+  ads.setGain(GAIN_ONE);
   ads.begin();
 }
 
 void loop()
 {
   long now = millis();
-  if (now - lastTime > interval)
+  if (now - lastCheckTime > checkInterval)
   {
-    lastTime = now;
+    lastCheckTime = now;
     println("Checking DB connection");
     bool connected = dbConnection.is_connected();
     if (!connected)
@@ -186,5 +218,18 @@ void loop()
       dbConnection.mysql_connect(dbAddress, dbPort, dbUser, dbPassword);
     }
     acquireData();
+  }
+
+  if(now - lastSendTime > sendInterval)
+  {
+    lastSendTime = now;
+    println("Checking DB connection");
+    bool connected = dbConnection.is_connected();
+    if (!connected)
+    {
+      println("Reconnecting DB");
+      dbConnection.mysql_connect(dbAddress, dbPort, dbUser, dbPassword);
+    }
+    sendData();
   }
 }
